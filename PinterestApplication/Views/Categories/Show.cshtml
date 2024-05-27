@@ -1,0 +1,16 @@
+﻿
+<h2> Show categories </h2>
+<br />
+
+@foreach (var category in ViewBag.Categories)
+{
+    <div class="card" style="width: 18rem;">
+        <img src="https://via.placeholder.com/150" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@category.Name</h5>
+            <p class="card-text">@category.Description</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+            <br />
+        </div>
+    </div>
+}
