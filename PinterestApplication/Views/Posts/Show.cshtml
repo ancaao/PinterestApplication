@@ -1,0 +1,89 @@
+﻿@model PinterestApplication.Models.Post
+
+
+@if (TempData["message"] != null)
+{
+    <div class="alert @ViewBag.Alert p-3 rounded-3 text-center mb-5">
+        @ViewBag.Message
+    </div>
+}
+
+@* <a href="/Bookmarks/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a> *@
+
+<div class="card">
+
+
+    <div class="card" style="width: 100%;">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between flex-row mb-3">
+                <div><i class="bi bi-person"></i> <a href="/Users/Profile/@Model.UserId" style="font-size:14px; color: #bd081c">@Model.User.UserName</a></div>
+                <span class="alert-success" style="font-size:12px; background-color: #bd081c; color: white">@Model.Date</span>
+            </div>
+
+            <h3 class="card-title alert-success py-3 px-3 rounded-2" style="background-color: #bd081c; color: white">@Model.Title</h3>
+
+           @* <a href="/Posts/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a> *@
+@*             <div class="d-flex justify-content-between flex-row mb-3">
+                 <form method="post" asp-action="AddLike" asp-route-id="@Model.Id">
+                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #8B0000">
+                        <i class="bi bi-heart" style="color:white"></i>
+                    </button> 
+                     @if (Model.Likes != null)
+                    {
+                        <span class="alert-success"><p>@Model.Likes.Count()</p></span>
+                    }
+                    else
+                    {
+                        <p>0</p> <!-- sau afișează altă valoare implicită pentru cazul în care Likes este null -->
+                    }
+ 
+                </form>
+            </div> *@
+
+
+
+            <div class="d-flex justify-content-between flex-row mt-3">
+                <div><i class="bi-globe"></i> @Model.Category.Name</div>
+            </div>
+
+        </div>
+
+
+
+        @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.UserCurent || ViewBag.EsteAdmin)
+        {
+            <div class="d-flex flex-row justify-content-between p-3 border-1 border-top">
+
+                <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Editeaza bookmark</a>
+
+                <form method="post" action="/Posts/Delete/@Model.Id">
+
+                    <button class="btn btn-danger" type="submit">Sterge bookmark</button>
+
+                </form>
+
+            </div>
+        }
+@* 
+        <form method="post" asp-controller="Posts" asp-action="AddCollection">
+            <input type="hidden" name="Posts" value="@Model.Id" />
+            <div class="d-flex flex-row justify-content-center p-3 border-1 border-top">
+                <div>
+                    <select name="CollectionId" class="form-control">
+                        <option selected>Adauga acest bookmark intr-o colectie</option>
+                        @foreach (var collection in ViewBag.UserCollections)
+                        {
+                            <option value="@collection.Id">@collection.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <input type="submit" class="btn btn-success alert-success" value="+" />
+                </div>
+            </div>
+        </form> *@
+    </div>
+</div>
+
+<br />

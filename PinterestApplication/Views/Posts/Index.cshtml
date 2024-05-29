@@ -1,0 +1,62 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewBag.Title = "Feed";
+}
+
+@if (TempData["message"] != null)
+{
+    <div class="alert @ViewBag.Alert p-3 rounded-3 text-center mb-5">
+        @ViewBag.Message
+    </div>
+}
+
+<div class="text-center">
+    <a class="btn btn-outline-success" href="/Posts/New">Add new post</a>
+
+
+ <a href="/Posts/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a>
+
+<br />
+<div class="row">
+    @foreach (PinterestApplication.Models.Post post in ViewBag.Posts)
+    {
+        <div class="col-3 mb-4">
+
+
+            <div class="card" style="width:100%">
+
+                @Html.Partial("PostInfo", post)
+
+                <div class="card-container">
+
+@*                     <form method="post" asp-action="AddLike" asp-route-id="@bookmark.Id">
+                        <button type="submit" class="btn-like">
+                            <i class="bi bi-heart" style="color:white"></i>
+                        </button>
+                    </form>
+ *@
+@*                     <div class="col nrlike-column">
+                        @if (bookmark.Likes != null)
+                        {
+                            <p class="like-count">@bookmark.Likes.Count()</p>
+                        }
+                        else
+                        {
+                            <p class="like-count">0</p>
+                        }
+                    </div> *@
+                    <div class="categ">
+                        <div><i class="bi bi-globe"></i> @post.Category.Name</div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+</div>
+

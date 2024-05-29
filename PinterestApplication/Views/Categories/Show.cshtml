@@ -1,16 +1,38 @@
-﻿
-<h2> Show categories </h2>
+﻿@model PinterestApplication.Models.Category
+@{
+    
+}
 <br />
 
-@foreach (var category in ViewBag.Categories)
-{
-    <div class="card" style="width: 18rem;">
-        <img src="https://via.placeholder.com/150" class="card-img-top" alt="...">
-        <div class="card-body">
-            <h5 class="card-title">@category.Name</h5>
-            <p class="card-text">@category.Description</p>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
-            <br />
-        </div>
+
+<div class="row">
+
+    <div class="col-12">
+        <h5 class="card-title" name="Name" sstyle="color: white">@Model.Name</h5>
+    
+        
+        <br /><br />
     </div>
-}
+
+  @*  @if (Model.Posts.Count > 0)
+{
+        @foreach (var bookmark in Model.Posts)
+        {
+            <div class="col-3 mb-4">
+                <!-- Aici este modificarea -->
+                <div class="card" style="width:100%">
+
+                    @Html.Partial("BookmarkInfo", bookmark)
+
+                  
+
+                </div>
+            </div>
+        } 
+} *@
+
+<a class="btn btn-success" href="/Categories/Show">Show category list</a>
+
+<br />
+<hr />
+<br />

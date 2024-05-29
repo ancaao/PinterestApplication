@@ -1,0 +1,24 @@
+﻿@model PinterestApplication.Models.Category
+
+
+@{
+    ViewBag.Title = "Edit category";
+}
+
+<h2>@ViewBag.Title</h2>
+
+
+    @using (Html.BeginForm(controllerName: "Categories", actionName: "Edit", method: FormMethod.Post,
+                        routeValues: new { id = Model.Id }))
+    {
+        @Html.Label("Name", "Category name")
+        <br />
+        @Html.Editor("Name")
+
+        @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
+        <br />
+
+        <br />
+
+        <button class="btn btn-success" type="submit">Update category</button>
+    }

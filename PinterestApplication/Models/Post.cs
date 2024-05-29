@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PinterestApplication.Models
 {
@@ -17,13 +19,18 @@ namespace PinterestApplication.Models
         [Required(ErrorMessage = "Category required")]
         public int CategoryId { get; set; }
         public string? UserId { get; set; }
-
+ 
+        public virtual Category? Category { get; set; }
         public DateTime Date { get; set; }
+
+        public virtual ApplicationUser? User { get; set; }
         public ICollection<string>? Keywords { get; set; }
 
         public virtual ICollection<Like>? Likes { get; set; }
-        public virtual ICollection<PostBoard>? PostBoards { get; set; }  
-        public virtual Category? Category { get; set; }
-        public virtual ApplicationUser? User { get; set; }
+        public virtual ICollection<PostBoard>? PostBoards { get; set; }
+        
+        [NotMapped]
+        public IEnumerable<SelectListItem>? Categories { get; set; }
+        
     }
 }

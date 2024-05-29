@@ -1,8 +1,45 @@
-﻿@if (User.IsInRole("Admin, User"))
+﻿@{
+    ViewBag.Title = "Category list";
+}
+<br />
+<h2 class="text-center">@ViewBag.Title</h2>
+<br />
+
+@if (User.IsInRole("Admin"))
 {
     <div class="align-items-center justify-content-center d-flex">
-        <a class="btn btn-success" style="background-color: #bd081c" href="/Categories/New">Adauga o noua categorie</a>
+        <a class="btn btn-success"  href="/Categories/New">Add a new category</a>
 
     </div>
+}
+<br />
+
+
+@foreach (var category in ViewBag.Categories)
+{
+
+    <p>@category.Name</p>
+    <div class="d-flex align-items-center gap-2">
+    <a class="btn btn-success" href="/Categories/Show/@category.Id">Show category</a>
+
+    @if (User.IsInRole("Admin"))
+    {
+        
+        <a class="btn btn-success" href="/Categories/Edit/@category.Id">Edit category</a>
+        
+
+        <form method="post" action="/Categories/Delete/@category.Id">
+
+            <button class="btn btn-danger" style="background-color: #bd081c" type="submit">Delete category</button>
+
+        </form>
+
+        <br />
+    }
+    </div>
+
+    <br />
+    <hr />
+    <br />
 }
 <br />
