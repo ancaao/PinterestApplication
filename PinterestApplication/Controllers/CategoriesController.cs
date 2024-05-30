@@ -6,6 +6,7 @@ using PinterestApplication.Data.Migrations;
 using PinterestApplication.Models;
 using Category = PinterestApplication.Models.Category;
 using ApplicationUser = PinterestApplication.Models.ApplicationUser;
+using Microsoft.EntityFrameworkCore;
 
 namespace PinterestApplication.Controllers
 {
@@ -42,6 +43,26 @@ namespace PinterestApplication.Controllers
             return View();
         }
 
+
+        [Authorize(Roles = "Admin,User")]
+        [AllowAnonymous]
+        public IActionResult BookmarksByCategory(int categoryId)
+        {
+            var posts = db.Post.Include("Category")
+                                    .Include("User")
+                                    .Include("Likes")
+                                    .Where(p => p.CategoryId == categoryId)
+                                    .OrderByDescending(b => b.Date)
+                                    .ToList();
+
+            ViewBag.Post = posts;
+            ViewBag.SelectedCategoryId = categoryId;
+
+            return View("Index");
+        }
+
+
+
         [Authorize(Roles ="Admin")]
         public ActionResult New()
         {
@@ -72,7 +93,10 @@ namespace PinterestApplication.Controllers
         {
             // SetAccessRights(); // Asigură-te că metoda SetAccessRights este implementată corect
 
-            var category = db.Category.FirstOrDefault(c => c.Id == id);
+            var category = db.Category.Include(c => c.Posts)
+                .ThenInclude(p => p.Likes)
+                .ThenInclude(p => p.User)
+                .FirstOrDefault(c => c.Id == id);
 
             if (category == null)
             {

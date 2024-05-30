@@ -14,22 +14,21 @@
         <br /><br />
     </div>
 
-  @*  @if (Model.Posts.Count > 0)
+   @if (Model.Posts.Count > 0)
 {
-        @foreach (var bookmark in Model.Posts)
+        @foreach (var post in Model.Posts)
         {
             <div class="col-3 mb-4">
-                <!-- Aici este modificarea -->
                 <div class="card" style="width:100%">
 
-                    @Html.Partial("BookmarkInfo", bookmark)
+                    @Html.Partial("PostInfo", post)
 
                   
 
                 </div>
             </div>
         } 
-} *@
+} 
 
 <a class="btn btn-success" href="/Categories/Show">Show category list</a>
 

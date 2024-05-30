@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PinterestApplication.Data;
 
@@ -11,9 +12,11 @@ using PinterestApplication.Data;
 namespace PinterestApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240530133842_Photo")]
+    partial class Photo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -460,7 +463,7 @@ namespace PinterestApplication.Data.Migrations
             modelBuilder.Entity("PinterestApplication.Models.Comment", b =>
                 {
                     b.HasOne("PinterestApplication.Models.Post", "Post")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("PostId");
 
                     b.HasOne("PinterestApplication.Models.ApplicationUser", "User")
@@ -548,8 +551,6 @@ namespace PinterestApplication.Data.Migrations
 
             modelBuilder.Entity("PinterestApplication.Models.Post", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Likes");
 
                     b.Navigation("PostBoards");

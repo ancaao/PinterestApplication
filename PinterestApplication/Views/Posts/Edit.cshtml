@@ -1,0 +1,43 @@
+﻿@model PinterestApplication.Models.Post
+
+@{
+    ViewData["Title"] = "Edit Post";
+}
+
+<h2 class="text-center mt-5 custom-header">Edit Post</h2>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                @Html.HiddenFor(m => m.Id) <!-- Ascundem ID-ul postării pentru a ști ce postare edităm -->
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+  
+
+
+                <label>Select a category</label>
+                @Html.DropDownListFor(m => m.CategoryId, new SelectList(Model.Categories, "Value", "Text"),
+                         "Select a category", new { @class = "form-control" })
+                <br />
+                <br />
+                <div class=" text-center form-group">
+                    <button type="submit" class="btn btn-primary custom-button">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

@@ -16,6 +16,8 @@ namespace PinterestApplication.Models
         [Required(ErrorMessage = "Post description required")]
         public string Description { get; set; }
 
+        public byte[] Image {  get; set; }
+
         [Required(ErrorMessage = "Category required")]
         public int CategoryId { get; set; }
         public string? UserId { get; set; }
@@ -24,11 +26,12 @@ namespace PinterestApplication.Models
         public DateTime Date { get; set; }
 
         public virtual ApplicationUser? User { get; set; }
-        public ICollection<string>? Keywords { get; set; }
+        public List<string>? Keywords { get; set; }
 
         public virtual ICollection<Like>? Likes { get; set; }
         public virtual ICollection<PostBoard>? PostBoards { get; set; }
         
+        public virtual ICollection<Comment>? Comments { get; set; }
         [NotMapped]
         public IEnumerable<SelectListItem>? Categories { get; set; }
         

@@ -18,6 +18,5 @@ namespace PinterestApplication.Models
         public virtual ApplicationUser? User { get; set; }
         public virtual Post? Post { get; set; }
 
-//        public virtual Bookmark? Bookmark { get; set; }
     }
 }
