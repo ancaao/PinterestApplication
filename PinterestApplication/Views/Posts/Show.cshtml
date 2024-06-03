@@ -10,17 +10,17 @@
 
 <div class="card">
     <div class="card" style="width: 100%;">
-        <div class="card-body">
+        <div class="card-body" style="background-color :  #FFCCE1">
 
             <div class="d-flex justify-content-between flex-row mb-3">
                 <div>
                     <i class="bi bi-person"></i> 
-                    <a href="/Users/Profile/@Model.UserId" style="font-size:14px; color: #bd081c">@Model.User.UserName</a>
+                    <a href="/Users/Profile/@Model.UserId" style="font-size:14px; color: #BD0071">@Model.User.UserName</a>
                 </div>
-                <span class="alert-success" style="font-size:12px; background-color: #bd081c; color: white">@Model.Date</span>
+                <span class="alert-success" style="font-size:12px;background-color:  #FFCCE1; color: #BD0071">@Model.Date</span>
             </div>
 
-            <h3 class="card-title alert-success py-3 px-3 rounded-2" style="background-color: #bd081c; color: white">@Model.Title</h3>
+            <h3 class="card-title alert-success py-3 px-3 rounded-2" style="background-color: #BD0071; color: white">@Model.Title</h3>
 
             <a href="/Posts/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a>
             <div class="keywords">Keywords: @Model.Keywords</div>
@@ -33,7 +33,7 @@
             }
             <div class="d-flex justify-content-between flex-row mb-3">
                  <form method="post" asp-action="AddLike" asp-route-id="@Model.Id">
-                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #8B0000">
+                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #BD0071">
                         <i class="bi bi-heart" style="color:white"></i>
                     </button> 
                      @if (Model.Likes != null)
@@ -48,7 +48,7 @@
                 </form>
 
                 <form method="post" asp-action="AddComment" asp-route-id="@Model.Id">
-                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #8B0000">
+                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #BD0071">
                         <i class="bi bi-chat-square-text" style="color:white"></i>
                     </button>
                     @if (Model.Comments != null)
@@ -94,7 +94,7 @@
 
         <form method="post" asp-controller="Posts" asp-action="AddBoard">
             <input type="hidden" name="PostId" value="@Model.Id" />
-            <div class="d-flex flex-row justify-content-center p-3 border-1 border-top">
+            <div class="d-flex flex-row justify-content-center p-3 border-1 border-top" style="background-color :#FFCCE1">
                 <div>
                     <select name="BoardId" class="form-control">
                     <option selected>Add post to a board</option>
@@ -109,7 +109,7 @@
                     </select>
                 </div>
                 <div>
-                    <input type="submit" class="btn btn-success alert-success" value="+" />
+                    <input type="submit" class="btn btn-success alert-success" value="+" style="background-color : #BD0071; color: #FFCCE1" />
                 </div>
             </div>
         </form>
@@ -177,49 +177,6 @@
  
 <h2 class="text-center">Comments</h2>
 <br />
-@* @foreach (var comm in Model.Comments)
-{
-
-    <div class="container">
-        <div class="row">
-            <div class="col-md-2">
-            </div>
-            <div class="col-md-8">
-
-                <div>
-                    <br />
-                    <p>@comm.User.UserName</p>
-
-                    <p>@comm.Content</p>
-
-                   @*  @if (User.IsInRole("Admin") || (ViewBag.CurrentUser != null && ViewBag.CurrentUser.Id == @comm.UserId))
-                    {
-                        <div class="d-flex justify-content-end">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-primary btn-block dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    <i class="bi bi-three-dots"></i>
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="btn btn-outline-primary btn-block" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Edit</a>
-                                    <form method="post" action="/Comments/Delete/@comm.Id">
-                                        <button class="btn btn-outline-primary btn-block" type="submit"><i class="bi bi-trash"></i>Delete</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    } *@
-@* 
-                    <small>@comm.Date</small>
-
-                </div>
-                <br>
-
-
-            </div>
-        </div>
-    </div>
-
-} *@ 
 
 @* Afisarea formularului in care se poate adauga un comentariu *@
 

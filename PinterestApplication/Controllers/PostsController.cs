@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PinterestApplication.Data;
@@ -30,8 +31,8 @@ namespace PinterestApplication.Controllers
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var posts = db.Post.Include("Category").Include("User").Include("Likes").
-                OrderByDescending(p => p.Date).OrderByDescending(p => p.Likes.Count);
+            var posts = db.Post.Include("Category").Include("User").Include("Likes").AsQueryable();
+            /*                OrderByDescending(p => p.Date).OrderByDescending(p => p.Likes.Count);*/
 
             ViewBag.Posts = posts;
 
@@ -59,11 +60,59 @@ namespace PinterestApplication.Controllers
                     .Include("Likes")
                     .OrderBy(p => p.Date);
 
+
                 //ViewBag.Posts = posts;
             }
 
+            string sortOrder = HttpContext.Request.Query["sortOrder"];
+            if (sortOrder == "likesAsc")
+            {
+                posts = posts.OrderBy(p => p.Likes.Count);
+            }
+            else if (sortOrder == "likesDesc")
+            {
+                posts = posts.OrderByDescending(p => p.Likes.Count);
+            }
+
             ViewBag.SearchString = search;
-            return View(posts);
+
+            int _perPage = 8;
+
+            int totalItems = posts.Count();
+
+            var currentPage = Convert.ToInt32(HttpContext.Request.Query["page"]);
+            var offset = 0;
+            if (!currentPage.Equals(0))
+            {
+                offset = (currentPage - 1) * _perPage;
+            }
+            var paginatedPosts =
+            posts.Skip(offset).Take(_perPage);
+
+            // Preluam numarul ultimei pagini
+            ViewBag.lastPage = Math.Ceiling((float)totalItems / (float)_perPage);
+            // Trimitem articolele cu ajutorul unui ViewBag catre View-ul corespunzator
+            ViewBag.Posts = paginatedPosts;
+
+            if (search != "")
+            {
+                ViewBag.PaginationBaseUrl = "/Posts/Index/?search="
+                + search + "&page";
+            }
+            else
+            {
+                ViewBag.PaginationBaseUrl = "/Posts/Index/?page";
+            }
+
+
+
+            if (TempData.ContainsKey("message"))
+            {
+                ViewBag.Message = TempData["message"];
+                ViewBag.Alert = TempData["messageType"];
+            }
+
+            return View();
         }
 
 

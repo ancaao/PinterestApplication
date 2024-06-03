@@ -1,10 +1,4 @@
-﻿﻿
-<br />
-<br />
-
-
-<br />
-
+﻿
 @if (TempData["message"] != null)
 {
     <div class="alert @ViewBag.Alert p-3 rounded-3 text-center mb-5">
@@ -14,42 +8,63 @@
 
 <br />
 
-
 <a class="btn btn-success rounded-pill mb-5" href="/Boards/New">
     <i class="bi bi-plus"></i> Add board
 </a>
 
-
-
-
 <div class="row">
-    @foreach (var board in ViewBag.Board)
+    @if (ViewBag.IsAdmin)
     {
-        <div class="col-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" name="Name">@board.Name</h5>
+        @foreach (var board in ViewBag.Board)
+        {
+            <div class="col-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" name="Name">@board.Name</h5>
 
-                    @if (ViewBag.IsAdmin)
-                    {
-                        <div><i class="bi bi-person"> Created by: </i> @board.User.UserName</div>
-                    }
+                        @if (ViewBag.IsAdmin && board.User != null)
+                        {
+                            <div><i class="bi bi-person"> Created by: </i> @board.User.UserName</div>
+                        }
 
-                    <br />
+                        <br />
 
-                    <a class="btn btn-success" href="/Boards/Show/@board.Id">Show board</a>
+                        <a class="btn btn-success" href="/Boards/Show/@board.Id">Show board</a>
 
-                    <br />
-                    <br />
-                    @if (board.UserId == ViewBag.CurrentUser|| ViewBag.IsAdmin)
-                    {
+                        <br />
+                        <br />
                         <form method="post" action="/Boards/Delete/@board.Id">
                             <button class="btn btn-danger" type="submit">Delete board</button>
                         </form>
                         <br />
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        @foreach (var board in ViewBag.Boards)
+        {
+            <div class="col-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title" name="Name">@board.Name</h5>
+                        <br />
+                        <a class="btn btn-success" href="/Boards/Show/@board.Id">Show board</a>
+
+                        <br />
+                        <br />
+                        @if (board.UserId == ViewBag.CurrentUser)
+                        {
+                            <form method="post" action="/Boards/Delete/@board.Id">
+                                <button class="btn btn-danger" type="submit">Delete board</button>
+                            </form>
+                            <br />
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     }
 </div>

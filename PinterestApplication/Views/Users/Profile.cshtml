@@ -4,11 +4,11 @@
 
 <style>
     body {
-        background-color: #efefef;
+        background-color:white ;
     }
 
     h2 {
-        color: #bd081c;
+        color: #BD0071;
     }
 
     .grid {
@@ -18,7 +18,7 @@
     }
 
     .card {
-        background-color: white;
+        background-color: #FFCCE1;
         border: none;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -34,23 +34,23 @@
     }
 
     .bi {
-        color: #bd081c;
+        color: #BD0071;
     }
 
     .btn-success {
-        background-color: #bd081c;
-        border-color: #bd081c;
+        background-color: #ED3B9D;
+        border-color: #ED3B9D;
         color: white;
         transition: background-color 0.3s ease-in-out;
     }
 
         .btn-success:hover {
-            background-color: #8c0615;
-            border-color: #8c0615;
+            background-color: #BD0071;
+            border-color: #BD0071;
         }
 </style>
 
-<h2>User profile</h2>
+<h2>My profile</h2>
 
 <div class="row">
     <div class="col-3 mb-4">
@@ -58,22 +58,6 @@
             <div class="card-body d-flex justify-content-between flex-column">
                 <div>
                     <p><i class="bi bi-person"></i> UserName: @Model.UserName</p>
-                    <p><i class="bi bi-bookmark"></i> User's boards</p>
-                    @if (Model.Boards != null && Model.Boards.Any())
-                    {
-                        foreach (var board in Model.Boards)
-                        {
-                            <p>
-                                <a class="btn btn-sm btn-success" href="@Url.Action("Show", "Boards", new { id = board.Id })">@board.Name</a>
-                            </p>
-                        }
-                    }
-
-                    else
-                    {
-                        <p>(The user does not have collections)</p>
-                    }
-
                 </div>
 
                 @inject SignInManager<ApplicationUser> SignInManager
@@ -81,7 +65,7 @@
                 {
                     <div class="d-flex flex-row justify-content-between p-3">
                         <div>
-                            <a class="btn btn-sm btn-success" href="/Identity/Account/Manage"> Edit profile</a>
+                            <a class="btn btn-sm btn-success" asp-area="" asp-controller="Users" asp-action="Edit" asp-route-id="@Model.Id">Edit profile</a>
                         </div>
                     </div>
                 }
@@ -111,7 +95,22 @@
                 <div class="card-body">
                     <div class="d-flex flex-row justify-content-between p-3">
                         <div>
-                            <a class="btn btn-sm btn-success" href="/Boards/Index">Saved posts in boards</a>
+@*                             <a class="btn btn-sm btn-success" href="/Boards/Index">Show all boards</a> *@
+                            <p><i class="bi bi-bookmark"></i> Your boards</p>
+                            @if (Model.Boards != null && Model.Boards.Any())
+                            {
+                                foreach (var board in Model.Boards)
+                                {
+                                    <p>
+                                    <a class="btn btn-sm btn-success" href="@Url.Action("Show", "Boards", new { id = board.Id })">@board.Name</a>
+                                    </p>
+                                }
+                            }
+
+                            else
+                            {
+                                <p>(You do not have boards)</p>
+                            } 
                         </div>
                     </div>
                 </div>
