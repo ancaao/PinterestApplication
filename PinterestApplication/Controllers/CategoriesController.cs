@@ -142,9 +142,23 @@ namespace PinterestApplication.Controllers
         public ActionResult Delete(int id)
         {
             Category category = db.Category.Find(id);
+            var postsToDelete = db.Post.Where(p => p.CategoryId == id);
+            foreach (var post in postsToDelete)
+            {
+                // Găsește toate comentariile asociate acestor postări și șterge-le
+                var commentsToDelete = db.Comment.Where(c => c.PostId == post.Id);
+                db.Comment.RemoveRange(commentsToDelete);
+
+                // Șterge postarea
+                db.Post.Remove(post);
+            }
+
+            // Șterge categoria
             db.Category.Remove(category);
+
             TempData["message"] = "Category deleted";
             db.SaveChanges();
+
             return RedirectToAction("Index");
         }
 

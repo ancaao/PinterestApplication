@@ -1,6 +1,20 @@
 ﻿@{
     ViewBag.Title = "Category list";
 }
+
+<style>
+    .btn-success {
+        background-color: #ED3B9D;
+        border-color: #ED3B9D;
+        color: white;
+        transition: background-color 0.3s ease-in-out;
+    }
+
+        .btn-success:hover {
+            background-color: #BD0071;
+            border-color: #BD0071;
+        }
+</style>
 <br />
 <h2 class="text-center">@ViewBag.Title</h2>
 <br />
@@ -18,7 +32,7 @@
 @foreach (var category in ViewBag.Categories)
 {
 
-    <p>@category.Name</p>
+    <h4>@category.Name</h4>
     <div class="d-flex align-items-center gap-2">
     <a class="btn btn-success" href="/Categories/Show/@category.Id">Show category</a>
 

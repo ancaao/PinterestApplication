@@ -8,8 +8,8 @@
 
 <br />
 
-<a class="btn btn-success rounded-pill mb-5" href="/Boards/New">
-    <i class="bi bi-plus"></i> Add board
+<a class="btn btn-success rounded-pill mb-5" style="background-color: #BD0071; color: white ;"  href="/Boards/New">
+    <i class="bi bi-plus" ></i> Add board
 </a>
 
 <div class="row">
@@ -29,12 +29,12 @@
 
                         <br />
 
-                        <a class="btn btn-success" href="/Boards/Show/@board.Id">Show board</a>
+                        <a class="btn btn-success" href="/Boards/Show/@board.Id" style="background-color: #BD0071; color: white ;">Show board</a>
 
                         <br />
                         <br />
                         <form method="post" action="/Boards/Delete/@board.Id">
-                            <button class="btn btn-danger" type="submit">Delete board</button>
+                            <button class="btn btn-danger" style="background-color: #bd081c" type="submit">Delete board</button>
                         </form>
                         <br />
                     </div>
@@ -58,7 +58,7 @@
                         @if (board.UserId == ViewBag.CurrentUser)
                         {
                             <form method="post" action="/Boards/Delete/@board.Id">
-                                <button class="btn btn-danger" type="submit">Delete board</button>
+                                <button class="btn btn-danger" style="background-color: #bd081c" type="submit">Delete board</button>
                             </form>
                             <br />
                         }

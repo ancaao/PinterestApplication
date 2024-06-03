@@ -21,7 +21,10 @@ namespace PinterestApplication.Controllers
         {
             var userId = _userManager.GetUserId(User);
             ViewBag.UserId = userId;
-            return View();
+
+            /*            return View();*/
+            return RedirectToAction("Index", "Posts");
+
         }
 
         public IActionResult Privacy()

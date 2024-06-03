@@ -1,6 +1,17 @@
 ﻿@model PinterestApplication.Models.Post
+<style>
+    .btn-primary {
+        background-color: #ED3B9D;
+        border-color: #ED3B9D;
+        color: white;
+        transition: background-color 0.3s ease-in-out;
+    }
 
-
+        .btn-primary:hover {
+            background-color: #BD0071;
+            border-color: #BD0071;
+        }
+</style>
 @if (TempData["message"] != null)
 {
     <div class="alert @ViewBag.Alert p-3 rounded-3 text-center mb-5">
@@ -10,20 +21,23 @@
 
 <div class="card">
     <div class="card" style="width: 100%;">
-        <div class="card-body" style="background-color :  #FFCCE1">
+        <div class="card-body" style="background-color: #FFCCE1">
 
             <div class="d-flex justify-content-between flex-row mb-3">
                 <div>
                     <i class="bi bi-person"></i> 
                     <a href="/Users/Profile/@Model.UserId" style="font-size:14px; color: #BD0071">@Model.User.UserName</a>
                 </div>
-                <span class="alert-success" style="font-size:12px;background-color:  #FFCCE1; color: #BD0071">@Model.Date</span>
+                <span class="alert-success" style="font-size:12px; background-color: #FFCCE1; color: #BD0071">@Model.Date</span>
             </div>
 
-            <h3 class="card-title alert-success py-3 px-3 rounded-2" style="background-color: #BD0071; color: white">@Model.Title</h3>
+            <h3 class="card-title alert-success py-3 px-3 rounded-2 text-uppercase" style="background-color: #BD0071; color: white">@Model.Title</h3>
 
-            <a href="/Posts/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a>
-            <div class="keywords">Keywords: @Model.Keywords</div>
+            <p>Description: @Html.Raw(Model.Description)</p>
+            @if (!string.IsNullOrEmpty(Model.Keywords))
+            {
+                <div class="keywords">Keywords: @Model.Keywords</div>
+            }
 
             @if (Model.Image != null && Model.Image.Length > 0)
             {
@@ -32,11 +46,11 @@
                 </div>
             }
             <div class="d-flex justify-content-between flex-row mb-3">
-                 <form method="post" asp-action="AddLike" asp-route-id="@Model.Id">
+                <form method="post" asp-action="AddLike" asp-route-id="@Model.Id">
                     <button type="submit" class="btn btn-danger btn-sm" style="background-color: #BD0071">
                         <i class="bi bi-heart" style="color:white"></i>
                     </button> 
-                     @if (Model.Likes != null)
+                    @if (Model.Likes != null)
                     {
                         <span class="alert-success"><p>@Model.Likes.Count()</p></span>
                     }
@@ -44,7 +58,6 @@
                     {
                         <p>0</p> <!-- sau afișează altă valoare implicită pentru cazul în care Likes este null -->
                     }
- 
                 </form>
 
                 <form method="post" asp-action="AddComment" asp-route-id="@Model.Id">
@@ -59,11 +72,8 @@
                     {
                         <p>0</p> <!-- sau afișează altă valoare implicită pentru cazul în care Likes este null -->
                     }
-
                 </form>
             </div>
-
-
 
             <div class="d-flex justify-content-between flex-row mt-3">
                 <div><i class="bi-globe"></i> @Model.Category.Name</div>
@@ -75,29 +85,12 @@
 
         </div>
 
-
-        @if ( ViewBag.AfisareButoane == true &&  Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
-        {
-            <div class="d-flex flex-row justify-content-between p-3 border-1 border-top">
-
-                <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Edit post</a>
-
-                <form method="post" action="/Posts/Delete/@Model.Id">
-
-                    <button class="btn btn-danger" type="submit">Delete post</button>
-
-                </form>
-
-            </div>
-        }
-
-
         <form method="post" asp-controller="Posts" asp-action="AddBoard">
             <input type="hidden" name="PostId" value="@Model.Id" />
-            <div class="d-flex flex-row justify-content-center p-3 border-1 border-top" style="background-color :#FFCCE1">
+            <div class="d-flex flex-row justify-content-center p-3 border-1 border-top" style="background-color: #FFCCE1">
                 <div>
                     <select name="BoardId" class="form-control">
-                    <option selected>Add post to a board</option>
+                        <option selected>Add post to a board</option>
                         @if (User.Identity.IsAuthenticated)
                         {
                             @foreach (var board in ViewBag.UserBoards)
@@ -106,124 +99,91 @@
                             }
                         }
                     </select>
-                    </select>
                 </div>
                 <div>
-                    <input type="submit" class="btn btn-success alert-success" value="+" style="background-color : #BD0071; color: #FFCCE1" />
+                    <input type="submit" class="btn btn-success alert-success" value="+" style="background-color: #BD0071; color: #FFCCE1" />
                 </div>
             </div>
         </form>
+        @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
+        {
+            <div class="d-flex flex-row justify-content-between p-3 border-1 border-top">
+                <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Edit post</a>
+                <form method="post" action="/Posts/Delete/@Model.Id">
+                    <button class="btn btn-danger" type="submit">Delete post</button>
+                </form>
+            </div>
+        }
     </div>
 </div>
 
 @* Afisare comentarii impreuna cu butoanele de editare si stergere *@
 </br>
 </br>
- @foreach (var comm in Model.Comments)
+
+@foreach (var comm in Model.Comments)
 {
-     <div class="container">
-       <div class="row">
+    <div class="container">
+        <div class="row">
             <div class="col-md-2"></div>
-
             <div class="col-md-8">
-
-                <div>
-
+                <div class="box">
                     <p>@comm.Content</p>
                     <small>@comm.Date</small>
-
                     <strong><i class="bi bi-person"></i>@comm.User.UserName</strong>
-
-
-
-                </div> 
-                <br>
-
-
-                @if (comm.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
+                </div>
+                <br />
+                @if (comm.UserId == ViewBag.CurrentUser || ViewBag.Isadmin)
                 {
-
                     <div class="d-flex">
                         @if (comm.UserId == ViewBag.CurrentUser)
                         {
                             <div>
-
                                 <a class="btn btn-outline-primary" href="/Comments/Edit/@comm.Id"><i class="bi bi-pencil-square"></i>Edit</a>
-
                             </div>
                         }
                         <div>
-
                             <form method="post" action="/Comments/Delete/@comm.Id">
-
                                 <button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i>Delete</button>
-
                             </form>
-
                         </div>
-
                     </div>
                 }
                 <br />
-
             </div>
-
             <div class="col-md-2"></div>
-
         </div>
-
-    </div> 
+    </div>
 }
- 
+
 <h2 class="text-center">Comments</h2>
 <br />
 
 @* Afisarea formularului in care se poate adauga un comentariu *@
-
 <div class="container">
-
     <div class="row">
-
         <div class="col-md-2"></div>
-
         <div class="col-md-8">
-
             <div class="card">
-
                 <form method="post" action="/Posts/Show/@Model.Id">
-
                     <div class="card-body">
-
                         <input type="hidden" name="PostId" value="@Model.Id" />
-
                         <label>Comment content</label>
                         <br />
-
                         <textarea class="form-control" name="Content"></textarea>
-
                         @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
-
                         <br /><br />
-
-                        <button class="btn btn-success " type="submit">Add comment</button>
-
+                        <button class="btn btn-success" type="submit">Add comment</button>
                         <br /><br />
-
                     </div>
-
                 </form>
-
             </div>
-
         </div>
-
         <div class="col-md-2"></div>
-
     </div>
-
 </div>
 
-<h3>Other posts in this category</h3>
+<h3 class="text-center">Other posts in this category</h3>
 <div class="row">
     @foreach (var post in ViewBag.OtherPosts)
     {
@@ -242,3 +202,24 @@
         </div>
     }
 </div>
+
+<style>
+    .box {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var grid = document.querySelector('.grid');
+        var masonry = new Masonry(grid, {
+            itemSelector: '.card',
+            columnWidth: '.card',
+            gutter: 20
+        });
+    });
+</script>
+
