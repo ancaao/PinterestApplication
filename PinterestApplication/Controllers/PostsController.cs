@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PinterestApplication.Data;
 using PinterestApplication.Data.Migrations;
 using PinterestApplication.Models;
@@ -33,7 +34,36 @@ namespace PinterestApplication.Controllers
                 OrderByDescending(p => p.Date).OrderByDescending(p => p.Likes.Count);
 
             ViewBag.Posts = posts;
-            return View();
+
+            var search = "";
+            // MOTOR DE CAUTARE
+            if (Convert.ToString(HttpContext.Request.Query["search"]) != null)
+            {
+                // eliminam spatiile libere
+                search = Convert.ToString(HttpContext.Request.Query["search"]).Trim();
+
+                // Căutare în titluri, cuvinte cheie și descrierea postărilor
+                List<int> postIds = db.Post.Where
+                    (p =>
+                    p.Title.Contains(search) ||
+                    p.Keywords.Contains(search) ||
+                    p.Description.Contains(search))
+                    .OrderBy(p => p.Title)
+                    .Select(p => p.Id)
+                    .ToList();
+
+                // Lista postărilor care conțin cuvântul căutat
+                posts = db.Post.Where(post => postIds.Contains(post.Id))
+                    .Include("Category")
+                    .Include("User")
+                    .Include("Likes")
+                    .OrderBy(p => p.Date);
+
+                //ViewBag.Posts = posts;
+            }
+
+            ViewBag.SearchString = search;
+            return View(posts);
         }
 
 
@@ -50,15 +80,25 @@ namespace PinterestApplication.Controllers
                    .Where(p => p.Id == id)
                    .First();
 
+            if (post == null)
+            {
+                return NotFound(); // Tratează cazul în care nu s-a găsit un post cu id-ul specificat
+            }
 
+            var otherPosts = db.Post
+                        .Where(p => p.CategoryId == post.CategoryId && p.Id != post.Id)
+                        .OrderByDescending(p => p.Date)
+                        .ToList();
+
+            ViewBag.OtherPosts = otherPosts;
 
             // Adaugam bookmark-urile utilizatorului pentru dropdown
-            /*            ViewBag.UserCollections = db.Collections
-                                                  .Where(b => b.UserId == _userManager.GetUserId(User))
-                                                  .ToList();*/
+            ViewBag.UserBoards = db.Board
+                                      .Where(b => b.UserId == _userManager.GetUserId(User))
+                                      .ToList();
 
 
-             SetAccessRights();
+            SetAccessRights();
 
             if (TempData.ContainsKey("message"))
             {
@@ -66,10 +106,10 @@ namespace PinterestApplication.Controllers
                 ViewBag.Alert = TempData["messageType"];
             }
 
-            if (post == null)
+           /* if (post == null)
             {
                 return NotFound(); // Tratează cazul în care nu s-a găsit un post cu id-ul specificat
-            }
+            }*/
 
             return View(post);
         }
@@ -99,14 +139,57 @@ namespace PinterestApplication.Controllers
 
 
                 // Adaugam bookmark-urile utilizatorului pentru dropdown
-/*                ViewBag.UserCollections = db.Collections
+                ViewBag.UserBoards = db.Board
                                           .Where(b => b.UserId == _userManager.GetUserId(User))
-                                          .ToList();*/
+                                          .ToList();
 
                 SetAccessRights();
 
                 return View(posts);
             }
+        }
+
+        [HttpPost]
+/*        [Authorize(Roles = "User,Admin")]*/
+        public IActionResult AddBoard([FromForm] PostBoard postBoard)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                // Daca modelul este valid
+                if (ModelState.IsValid)
+                {
+                    if (db.PostBoard
+                        .Where(bm => bm.PostId == postBoard.PostId)
+                        .Where(bm => bm.BoardId == postBoard.BoardId)
+                        .Count() > 0)
+                    {
+                        TempData["message"] = "This post was already added to selectet board";
+                        TempData["messageType"] = "alert-danger";
+                    }
+                    else
+                    {
+                        db.PostBoard.Add(postBoard);
+
+                        db.SaveChanges();
+
+                        TempData["message"] = "Post added to selected board successfully";
+                        TempData["messageType"] = "alert-success";
+                    }
+
+                }
+                else
+                {
+                    TempData["message"] = "Post could not be added to selected board";
+                    TempData["messageType"] = "alert-danger";
+                }
+            }
+            else
+            {
+                TempData["message"] = "You need to be logged in to add a post to a board";
+                TempData["messageType"] = "alert-danger";
+            }
+
+            return Redirect("/Posts/Show/" + postBoard.PostId);
         }
 
 
@@ -128,6 +211,7 @@ namespace PinterestApplication.Controllers
 
             // preluam id-ul utilizatorului care posteaza bookmarkul
             post.UserId = _userManager.GetUserId(User);
+            post.Keywords = post.Keywords?.Trim();
 
             if (image != null && image.Length > 0)
             {
@@ -196,13 +280,13 @@ namespace PinterestApplication.Controllers
                     post.Title = requestPost.Title;
                     post.Description = requestPost.Description;
                     post.CategoryId = requestPost.CategoryId;
+                    post.Keywords = requestPost.Keywords;
 
                     TempData["message"] = "Post updated successfully";
                     TempData["messageType"] = "alert-success";
                     db.SaveChanges();
-                    Console.WriteLine(post.Title);
+                    /*Console.WriteLine(post.Title);*/
                     return Redirect("/Posts/Show/" + post.Id);
-                    //ret
                 }
                 else
                 {
@@ -287,7 +371,7 @@ namespace PinterestApplication.Controllers
         }
 
         public bool UserLikedPost(int postId)
-        {
+        {   
             string userId = _userManager.GetUserId(User);
             return db.Like.Any(l => l.PostId == postId && l.UserId == userId);
         }
@@ -301,23 +385,30 @@ namespace PinterestApplication.Controllers
             {
                 string userId = _userManager.GetUserId(User);
 
-
-                if (UserLikedPost(post.Id))
+                if(User.Identity.IsAuthenticated)
                 {
-                    // Utilizatorul a apreciat deja, retragem aprecierea
-                    Like likeToRemove = db.Like.First(l => l.PostId == post.Id && l.UserId == userId);
-                    db.Like.Remove(likeToRemove);
+
+                    if (UserLikedPost(post.Id))
+                    {
+                        // Utilizatorul a apreciat deja, retragem aprecierea
+                        Like likeToRemove = db.Like.First(l => l.PostId == post.Id && l.UserId == userId);
+                        db.Like.Remove(likeToRemove);
+                    }
+                    else
+                    {
+                        // Utilizatorul nu a apreciat încă, adăugăm aprecierea
+                        Like like = new Like { PostId = post.Id, UserId = userId };
+                        db.Like.Add(like);
+                    }
+                    await db.SaveChangesAsync();
                 }
                 else
                 {
-                    // Utilizatorul nu a apreciat încă, adăugăm aprecierea
-                    Like like = new Like { PostId = post.Id, UserId = userId };
-                    db.Like.Add(like);
+                    TempData["message"] = "You need to be logged in to like a post";
+                    TempData["messageType"] = "alert-danger";
                 }
 
-                await db.SaveChangesAsync();
             }
-
             return RedirectToAction("Show", new { id = id });
         }
 

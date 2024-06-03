@@ -1,0 +1,46 @@
+﻿@model PinterestApplication.Models.Board
+
+@if (TempData["message"] != null)
+{
+    <div class="alert @TempData["messageType"] p-3 rounded-3 text-center mb-5">
+        @TempData["message"]
+    </div>
+}
+
+<div class="row">
+
+    <div class="col-12">
+        <h5 class="card-title" name="Name">@Model.Name</h5>
+        @if (ViewBag.IsAdmin)
+        {
+            <i class="bi bi-person"> Created by: </i> @Model.User.UserName
+        }
+
+        @if (Model.PostBoards == null || !Model.PostBoards.Any())
+        {
+            <p>No posts added to this board.</p>
+        }
+        else
+        {
+            <div class="row">
+                @foreach (var postBoard in Model.PostBoards)
+                {
+                    <div class="col-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+
+                                @Html.Partial("PostInfo", postBoard.Post)
+                                <a class="btn btn-primary" href="/Posts/Show/@postBoard.Post.Id">View Post</a>
+
+                                @if (postBoard.Board.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
+                                {
+                                    <form method="post" asp-controller="Boards" asp-action="DeleteFromBoard" asp-route-boardId="@Model.Id" asp-route-postId="@postBoard.PostId">
+                                        <button class="btn btn-sm btn-danger" type="submit">Delete from board</button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }

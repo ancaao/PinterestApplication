@@ -26,7 +26,8 @@ namespace PinterestApplication.Models
         public DateTime Date { get; set; }
 
         public virtual ApplicationUser? User { get; set; }
-        public List<string>? Keywords { get; set; }
+        public string? Keywords { get; set; }
+        public string? Url{ get; set; }
 
         public virtual ICollection<Like>? Likes { get; set; }
         public virtual ICollection<PostBoard>? PostBoards { get; set; }

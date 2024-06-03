@@ -23,19 +23,13 @@
             <h3 class="card-title alert-success py-3 px-3 rounded-2" style="background-color: #bd081c; color: white">@Model.Title</h3>
 
             <a href="/Posts/Show/@Model.Id" class="card-link">@Html.Raw(Model.Description)</a>
-
-@*             @if (!string.IsNullOrEmpty(ViewBag.ImageDataURL))
-            {
-                <img src="@ViewBag.ImageDataURL" alt="Image" style="max-width: 100%; height: auto;" />
-            }
-            else
-            {
-                <p>No image available</p>
-            } *@
+            <div class="keywords">Keywords: @Model.Keywords</div>
 
             @if (Model.Image != null && Model.Image.Length > 0)
             {
-                <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Image)" alt="Category Photo" class="post-photo" ; style="max-width: 100%; height: auto;"   />
+                <div class="text-center my-3">
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Image)" alt="Category Photo" class="post-photo" style="max-width: 100%; height: auto;" />
+                </div>
             }
             <div class="d-flex justify-content-between flex-row mb-3">
                  <form method="post" asp-action="AddLike" asp-route-id="@Model.Id">
@@ -74,11 +68,12 @@
             <div class="d-flex justify-content-between flex-row mt-3">
                 <div><i class="bi-globe"></i> @Model.Category.Name</div>
             </div>
+            @if (!string.IsNullOrEmpty(Model.Url))
+            {
+                <a href="@Model.Url" class="btn btn-primary mt-3" target="_blank">View Original Image Source</a>
+            }
 
         </div>
-@* 
-        <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Edit post</a>
- *@
 
 
         @if ( ViewBag.AfisareButoane == true &&  Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
@@ -95,34 +90,39 @@
 
             </div>
         }
-@* 
-        <form method="post" asp-controller="Posts" asp-action="AddCollection">
-            <input type="hidden" name="Posts" value="@Model.Id" />
+
+
+        <form method="post" asp-controller="Posts" asp-action="AddBoard">
+            <input type="hidden" name="PostId" value="@Model.Id" />
             <div class="d-flex flex-row justify-content-center p-3 border-1 border-top">
                 <div>
-                    <select name="CollectionId" class="form-control">
-                        <option selected>Adauga acest bookmark intr-o colectie</option>
-                        @foreach (var collection in ViewBag.UserCollections)
+                    <select name="BoardId" class="form-control">
+                    <option selected>Add post to a board</option>
+                        @if (User.Identity.IsAuthenticated)
                         {
-                            <option value="@collection.Id">@collection.Name</option>
+                            @foreach (var board in ViewBag.UserBoards)
+                            {
+                                <option value="@board.Id">@board.Name</option>
+                            }
                         }
+                    </select>
                     </select>
                 </div>
                 <div>
                     <input type="submit" class="btn btn-success alert-success" value="+" />
                 </div>
             </div>
-        </form> *@
+        </form>
     </div>
 </div>
 
 @* Afisare comentarii impreuna cu butoanele de editare si stergere *@
 </br>
 </br>
-@* @foreach (var comm in Model.Comments)
+ @foreach (var comm in Model.Comments)
 {
-    <div class="container">
-        <div class="row">
+     <div class="container">
+       <div class="row">
             <div class="col-md-2"></div>
 
             <div class="col-md-8">
@@ -136,7 +136,7 @@
 
 
 
-                </div>
+                </div> 
                 <br>
 
 
@@ -172,12 +172,12 @@
 
         </div>
 
-    </div>
+    </div> 
 }
- *@
+ 
 <h2 class="text-center">Comments</h2>
 <br />
-@foreach (var comm in Model.Comments)
+@* @foreach (var comm in Model.Comments)
 {
 
     <div class="container">
@@ -208,21 +208,7 @@
                             </div>
                         </div>
                     } *@
-                    @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
-                    {
-                        <div class="d-flex flex-row justify-content-between p-3 border-1 border-top">
-
-                            <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Editeaza bookmark</a>
-
-                            <form method="post" action="/Posts/Delete/@Model.Id">
-
-                                <button class="btn btn-danger" type="submit">Sterge bookmark</button>
-
-                            </form>
-
-                        </div>
-                    }
-
+@* 
                     <small>@comm.Date</small>
 
                 </div>
@@ -233,7 +219,7 @@
         </div>
     </div>
 
-}
+} *@ 
 
 @* Afisarea formularului in care se poate adauga un comentariu *@
 
@@ -278,4 +264,24 @@
 
     </div>
 
+</div>
+
+<h3>Other posts in this category</h3>
+<div class="row">
+    @foreach (var post in ViewBag.OtherPosts)
+    {
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                @if (post.Image != null)
+                {
+                    <img class="card-img-top" src="data:image;base64,@Convert.ToBase64String(post.Image)" alt="Post Image">
+                }
+                <div class="card-body">
+                    <h5 class="card-title">@post.Title</h5>
+                    <p class="card-text">@post.Description</p>
+                    <a href="/Posts/Show/@post.Id" class="btn btn-primary">View Post</a>
+                </div>
+            </div>
+        </div>
+    }
 </div>

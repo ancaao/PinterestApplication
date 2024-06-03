@@ -46,7 +46,7 @@ namespace PinterestApplication.Controllers
 
         [Authorize(Roles = "Admin,User")]
         [AllowAnonymous]
-        public IActionResult BookmarksByCategory(int categoryId)
+        public IActionResult PostsByCategory(int categoryId)
         {
             var posts = db.Post.Include("Category")
                                     .Include("User")
@@ -93,7 +93,8 @@ namespace PinterestApplication.Controllers
         {
             // SetAccessRights(); // Asigură-te că metoda SetAccessRights este implementată corect
 
-            var category = db.Category.Include(c => c.Posts)
+            var category = db.Category
+                .Include(c => c.Posts)
                 .ThenInclude(p => p.Likes)
                 .ThenInclude(p => p.User)
                 .FirstOrDefault(c => c.Id == id);
