@@ -7,10 +7,10 @@
         transition: background-color 0.3s ease-in-out;
     }
 
-        .btn-primary:hover {
-            background-color: #BD0071;
-            border-color: #BD0071;
-        }
+    .btn-primary:hover {
+        background-color: #BD0071;
+        border-color: #BD0071;
+    }
 </style>
 @if (TempData["message"] != null)
 {
@@ -56,23 +56,24 @@
                     }
                     else
                     {
-                        <p>0</p> <!-- sau afișează altă valoare implicită pentru cazul în care Likes este null -->
+                        <p>0</p>
                     }
                 </form>
 
-                <form method="post" asp-action="AddComment" asp-route-id="@Model.Id">
-                    <button type="submit" class="btn btn-danger btn-sm" style="background-color: #BD0071">
+                <form method="post" asp-action="AddComment" asp-route-id="@Model.Id"> 
+                    <a href="#commentsSection" class="btn btn-danger btn-sm" style="background-color: #BD0071">
                         <i class="bi bi-chat-square-text" style="color:white"></i>
-                    </button>
+                    </a>
+
                     @if (Model.Comments != null)
                     {
                         <span class="alert-success"><p>@Model.Comments.Count()</p></span>
                     }
                     else
                     {
-                        <p>0</p> <!-- sau afișează altă valoare implicită pentru cazul în care Likes este null -->
+                        <p>0</p>
                     }
-                </form>
+                 </form> 
             </div>
 
             <div class="d-flex justify-content-between flex-row mt-3">
@@ -120,7 +121,7 @@
 @* Afisare comentarii impreuna cu butoanele de editare si stergere *@
 </br>
 </br>
-
+<div id="commentsSection"></div>
 @foreach (var comm in Model.Comments)
 {
     <div class="container">
@@ -173,7 +174,7 @@
                         <textarea class="form-control" name="Content"></textarea>
                         @Html.ValidationMessage("Content", null, new { @class = "text-danger" })
                         <br /><br />
-                        <button class="btn btn-success" type="submit">Add comment</button>
+                        <button class="btn btn-success" type="submit" style="background-color: #BD0071">Add comment</button>
                         <br /><br />
                     </div>
                 </form>

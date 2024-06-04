@@ -79,7 +79,13 @@ namespace PinterestApplication.Models
                {
                    RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7212",
                    UserId = "8e445865-a24d-4543-a6c6-9443d048cdb2"
+               },
+               new IdentityUserRole<string>
+               {
+                   RoleId = "2c5e174e-3b0e-446f-86af-483d56fd7210",
+                   UserId = "e3a983b5-e716-443e-b09c-1f9396ff8578"
                }
+
             );
             context.SaveChanges();
             }
