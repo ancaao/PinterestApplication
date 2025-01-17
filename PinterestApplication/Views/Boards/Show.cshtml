@@ -11,7 +11,7 @@
 
     <div class="col-12">
         <h5 class="card-title" name="Name">@Model.Name</h5>
-        @if (ViewBag.IsAdmin || ViewBag.IsEditor)
+        @if (ViewBag.IsAdmin)
         {
             <i class="bi bi-person"> Created by: </i> @Model.User.UserName
         }
@@ -32,7 +32,7 @@
                                 @Html.Partial("PostInfo", postBoard.Post)
                                 <a class="btn btn-primary" href="/Posts/Show/@postBoard.Post.Id">View Post</a>
 
-                                @if (postBoard.Board.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin || ViewBag.IsEditor)
+                                @if (postBoard.Board.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
                                 {
                                     <form method="post" asp-controller="Boards" asp-action="DeleteFromBoard" asp-route-boardId="@Model.Id" asp-route-postId="@postBoard.PostId">
                                         <button class="btn btn-sm btn-danger" type="submit">Delete from board</button>

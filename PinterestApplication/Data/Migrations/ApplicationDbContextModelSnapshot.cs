@@ -230,35 +230,6 @@ namespace PinterestApplication.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("PinterestApplication.Models.Badge", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ImagePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Badge");
-                });
-
             modelBuilder.Entity("PinterestApplication.Models.Board", b =>
                 {
                     b.Property<int>("Id")
@@ -470,15 +441,6 @@ namespace PinterestApplication.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PinterestApplication.Models.Badge", b =>
-                {
-                    b.HasOne("PinterestApplication.Models.ApplicationUser", "User")
-                        .WithMany("Badges")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("PinterestApplication.Models.Board", b =>
                 {
                     b.HasOne("PinterestApplication.Models.ApplicationUser", "User")
@@ -560,8 +522,6 @@ namespace PinterestApplication.Data.Migrations
 
             modelBuilder.Entity("PinterestApplication.Models.ApplicationUser", b =>
                 {
-                    b.Navigation("Badges");
-
                     b.Navigation("Boards");
 
                     b.Navigation("Comments");

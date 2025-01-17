@@ -19,7 +19,7 @@
 <h2 class="text-center">@ViewBag.Title</h2>
 <br />
 
-@if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+@if (User.IsInRole("Admin"))
 {
     <div class="align-items-center justify-content-center d-flex">
         <a class="btn btn-success"  href="/Categories/New">Add a new category</a>
@@ -36,7 +36,7 @@
     <div class="d-flex align-items-center gap-2">
     <a class="btn btn-success" href="/Categories/Show/@category.Id">Show category</a>
 
-        @if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+    @if (User.IsInRole("Admin"))
     {
         
         <a class="btn btn-success" href="/Categories/Edit/@category.Id">Edit category</a>

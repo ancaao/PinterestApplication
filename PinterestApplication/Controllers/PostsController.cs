@@ -27,11 +27,11 @@ namespace PinterestApplication.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "User, Admin,Editor")]
+        [Authorize(Roles = "User, Admin")]
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var posts = db.Post.Include("Category").Include("User").Include("Likes").OrderByDescending(p => p.Date).AsQueryable();
+            var posts = db.Post.Include("Category").Include("User").Include("Likes").AsQueryable();
             /*                OrderByDescending(p => p.Date).OrderByDescending(p => p.Likes.Count);*/
 
             ViewBag.Posts = posts;
@@ -116,7 +116,7 @@ namespace PinterestApplication.Controllers
         }
 
 
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         [AllowAnonymous]
         public IActionResult Show(int id)
         {
@@ -164,7 +164,7 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
 
         public IActionResult Show([FromForm] Comment comment)
         {
@@ -242,7 +242,7 @@ namespace PinterestApplication.Controllers
         }
 
 
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult New()
         {
             Post post = new Post();
@@ -252,13 +252,13 @@ namespace PinterestApplication.Controllers
             return View(post);
         }
 
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         [HttpPost]
         public IActionResult New(Post post, IFormFile image)
         {
             post.Date = DateTime.Now;
 
-            // Preluăm id-ul utilizatorului care postează
+            // preluam id-ul utilizatorului care posteaza bookmarkul
             post.UserId = _userManager.GetUserId(User);
             post.Keywords = post.Keywords?.Trim();
 
@@ -269,40 +269,14 @@ namespace PinterestApplication.Controllers
                 post.Image = memoryStream.ToArray();
             }
 
-            // Adăugăm postarea în baza de date
             db.Post.Add(post);
             db.SaveChanges();
-
-            // Verificăm câte postări a făcut utilizatorul
-            var userPostsCount = db.Post.Count(p => p.UserId == post.UserId);
-
-            if (userPostsCount == 1)
-            {
-                // Verificăm dacă utilizatorul are deja badge-ul "First post"
-                var userBadge = db.Badge.FirstOrDefault(b => b.UserId == post.UserId && b.Name == "First post");
-
-                if (userBadge == null)
-                {
-                    // Adăugăm badge-ul pentru utilizatorul curent
-                    db.Badge.Add(new Badge
-                    {
-                        Name = "First post",
-                        ImagePath = "first-post.jpg",
-                        Description = "You have posted your first post",
-                        UserId = post.UserId
-                    });
-
-                    db.SaveChanges(); // Salvăm badge-ul
-                }
-            }
-
             TempData["message"] = "Post added";
             TempData["messageType"] = "alert-success";
             return RedirectToAction("Index");
         }
 
-
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Edit(int id)
         {
             Console.WriteLine(id);
@@ -315,7 +289,7 @@ namespace PinterestApplication.Controllers
 
             post.Categories = GetAllCategories();
 
-            if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin") || User.IsInRole("Editor"))
+            if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
                 return View(post);
             }
@@ -330,7 +304,7 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int id, Post requestPost)
         {
             Post post = db.Post.Find(id);
@@ -350,7 +324,7 @@ namespace PinterestApplication.Controllers
             if (ModelState.IsValid)
             {
                 Console.WriteLine("model state VALID");
-                if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin") || User.IsInRole("Editor"))
+                if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
                 {
                     post.Title = requestPost.Title;
                     post.Description = requestPost.Description;
@@ -380,7 +354,7 @@ namespace PinterestApplication.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public ActionResult Delete(int id)
         {
             Post post = db.Post.Include("Comments")
@@ -388,7 +362,7 @@ namespace PinterestApplication.Controllers
                                          .Where(bm => bm.Id == id)
                                          .First();
 
-            if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin") || User.IsInRole("Editor"))
+            if (post.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
             {
                 db.Post.Remove(post);
                 db.SaveChanges();
@@ -415,7 +389,6 @@ namespace PinterestApplication.Controllers
             }
 
             ViewBag.IsAdmin = User.IsInRole("Admin");
-            ViewBag.IsEditor = User.IsInRole("Editor");
 
             ViewBag.CurrentUser = _userManager.GetUserId(User);
         }
@@ -455,15 +428,15 @@ namespace PinterestApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> AddLike(int id)
         {
-            // Găsim postarea în baza de date
-            Post post = await db.Post.FindAsync(id);
+            Post post= await db.Post.FindAsync(id);
 
             if (post != null)
             {
                 string userId = _userManager.GetUserId(User);
 
-                if (User.Identity.IsAuthenticated)
+                if(User.Identity.IsAuthenticated)
                 {
+
                     if (UserLikedPost(post.Id))
                     {
                         // Utilizatorul a apreciat deja, retragem aprecierea
@@ -476,49 +449,17 @@ namespace PinterestApplication.Controllers
                         Like like = new Like { PostId = post.Id, UserId = userId };
                         db.Like.Add(like);
                     }
-
                     await db.SaveChangesAsync();
-
-                    // Verificăm dacă postarea are mai mult de 5 like-uri
-                    int likeCount = db.Like.Count(l => l.PostId == post.Id);
-
-                    if (likeCount > 0)
-                    {
-                        // Găsim utilizatorul care a creat postarea
-                        var postOwner = await db.Users.FindAsync(post.UserId);
-
-                        if (postOwner != null)
-                        {
-                            // Verificăm dacă utilizatorul are deja badge-ul "You rock"
-                            var userBadge = db.Badge.FirstOrDefault(b => b.UserId == postOwner.Id && b.Name == "You rock");
-
-                            if (userBadge == null)
-                            {
-                                // Adăugăm badge-ul pentru utilizatorul care a postat
-                                db.Badge.Add(new Badge
-                                {
-                                    Name = "You rock",
-                                    ImagePath = "you-rock.jpg",
-                                    Description = "5 people liked one of your posts",
-                                    UserId = post.UserId
-                                });
-
-                                await db.SaveChangesAsync();
-                            }
-                        }
-                    }
                 }
                 else
                 {
                     TempData["message"] = "You need to be logged in to like a post";
                     TempData["messageType"] = "alert-danger";
                 }
-            }
 
+            }
             return RedirectToAction("Show", new { id = id });
         }
-
-
 
 
         public IActionResult IndexNou()

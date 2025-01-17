@@ -78,7 +78,7 @@
 
     @if (SignInManager.IsSignedIn(User) && Model.Id == SignInManager.UserManager.GetUserId(User))
     {
-@*         <div class="col-3">
+        <div class="col-3">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex flex-row justify-content-between p-3">
@@ -88,7 +88,7 @@
                     </div>
                 </div>
             </div>
-        </div> *@
+        </div>
 
         <div class="col-3">
             <div class="card">
@@ -118,35 +118,9 @@
         </div>
 
         <div class="col-3">
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex flex-row justify-content-between p-3">
-                        <div>
-                            @*                             <a class="btn btn-sm btn-success" href="/Boards/Index">Show all boards</a> *@
-                            <p>Your badges</p>
-                            @if (Model.Badges != null && Model.Badges.Any())
-                            {
-                                foreach (var badge in Model.Badges)
-                                {
-                                    <p>
-                                        <img src="~/images/@badge.ImagePath" alt=@badge.Name style="width: 50px; height: 50px;" />
-                                        @badge.Description
-                                    </p>
-                                }
-                            }
-
-                            else
-                            {
-                                <p>(You do not have badges)</p>
-                            }
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     }
 </div>
-
 
 <div class="row mt-4">
     <div class="col-12">
@@ -171,8 +145,6 @@
         </div>
     </div>
 </div>
-
-
 
 
 

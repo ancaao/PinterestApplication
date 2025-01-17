@@ -23,7 +23,7 @@ namespace PinterestApplication.Controllers
 
 
         // HttpGet - implicit
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Index()
         {
             if (TempData.ContainsKey("message"))
@@ -43,7 +43,7 @@ namespace PinterestApplication.Controllers
 
                 ViewBag.Boards = boards;
             }
-            else if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+            else if (User.IsInRole("Admin"))
             {
                 var boards = from board in db.Board.Include("User")
                                   select board;
@@ -60,7 +60,7 @@ namespace PinterestApplication.Controllers
             return View();
         }
 
-        [Authorize(Roles = "User,Admin, Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Show(int id)
         {
             SetAccessRights();
@@ -83,7 +83,7 @@ namespace PinterestApplication.Controllers
 
                 return View(boards);
             }
-            else if (User.IsInRole("Admin") || User.IsInRole("Editor"))
+            else if (User.IsInRole("Admin"))
             {
 /*                var boards = db.Board
                                   .Include("PostBoard.Post.Category")
@@ -120,16 +120,15 @@ namespace PinterestApplication.Controllers
         }
 
 
-        [HttpGet("Boards/New")]
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult New()
         {
             return View();
         }
 
-        [HttpPost("Boards/New")]
-        [Authorize(Roles = "User,Admin,Editor")]
-        public IActionResult New(Board b)
+        [HttpPost]
+        [Authorize(Roles = "User,Admin")]
+        public ActionResult New(Board b)
         {
             b.UserId = _userManager.GetUserId(User);
 
@@ -137,28 +136,6 @@ namespace PinterestApplication.Controllers
             {
                 db.Board.Add(b);
                 db.SaveChanges();
-
-                // Verificăm câte board-uri are utilizatorul curent
-                var userBoardsCount = db.Board.Count(board => board.UserId == b.UserId);
-
-                if (userBoardsCount == 3)
-                {
-                    var userBadge = db.Badge.FirstOrDefault(badge => badge.UserId == b.UserId && badge.Name == "Board Master");
-
-                    if (userBadge == null)
-                    {
-                        db.Badge.Add(new Badge
-                        {
-                            Name = "Board Master",
-                            ImagePath = "boards.jpg",
-                            Description = "You have created 3 boards!",
-                            UserId = b.UserId
-                        });
-
-                        db.SaveChanges();
-                    }
-                }
-
                 TempData["message"] = "Board added";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
@@ -169,10 +146,8 @@ namespace PinterestApplication.Controllers
             }
         }
 
-
-
         [HttpPost]
-        [Authorize(Roles = "User, Admin,Editor")]
+        [Authorize(Roles = "User, Admin")]
         public ActionResult Delete(int id)
         {
             Board board = db.Board.Find(id);
@@ -201,8 +176,7 @@ namespace PinterestApplication.Controllers
                 ViewBag.AfisareButoane = true;
             }
 
-            ViewBag.IsAdmin = User.IsInRole("Admin") ;
-            ViewBag.IsEditor = User.IsInRole("Editor");
+            ViewBag.IsAdmin = User.IsInRole("Admin");
 
             ViewBag.CurrentUser = _userManager.GetUserId(User);
         }
@@ -213,7 +187,7 @@ namespace PinterestApplication.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin,Editor")]
+        [Authorize(Roles = "User,Admin")]
         public IActionResult DeleteFromBoard(int boardId, int postId)
         {
             Board board= db.Board
@@ -231,7 +205,7 @@ namespace PinterestApplication.Controllers
             if (postBoardToRemove != null)
             {
                 // Verificați dacă utilizatorul curent are permisiunea să șteargă această asociere
-                if (User.IsInRole("Admin") || User.IsInRole("Editor") || board.UserId == _userManager.GetUserId(User))
+                if (User.IsInRole("Admin") || board.UserId == _userManager.GetUserId(User))
                 {
                     board.PostBoards.Remove(postBoardToRemove);
                     db.SaveChanges();

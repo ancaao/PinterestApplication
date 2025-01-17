@@ -30,7 +30,7 @@ namespace PinterestApplication.Controllers
 
             _roleManager = roleManager;
         }
-        [Authorize(Roles = "Admin,User,Editor")]
+        [Authorize(Roles = "Admin,User")]
         [AllowAnonymous]
         [HttpGet("Users/Profile/{userId:guid}")]
         public IActionResult Profile(string userId)
@@ -48,14 +48,13 @@ namespace PinterestApplication.Controllers
 
             return View(user);
         }
-        [Authorize(Roles = "Admin,User,Editor")]
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Profile()
         {
             var userId = _userManager.GetUserId(User);
             var user = db.Users
                           .Include(u => u.Boards)
                           .Include(u => u.Posts)
-                          .Include(u => u.Badges)
                           .FirstOrDefault(u => u.Id == userId);
 
             if (user == null)
@@ -98,12 +97,12 @@ namespace PinterestApplication.Controllers
             return View(user);
         }
 
-        [Authorize(Roles = "Admin, User,Editor")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> Edit(string id)
         {
             var currentUserId = _userManager.GetUserId(User);
 
-            if (User.IsInRole("Admin") || User.IsInRole("Editor") || id == currentUserId)
+            if (User.IsInRole("Admin") || id == currentUserId)
             {
                 ApplicationUser user = await db.Users.FindAsync(id);
 
@@ -130,7 +129,43 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin, User,Editor")]
+
+        /*public async Task<ActionResult> Edit(string id, ApplicationUser newData, [FromForm] string newRole)
+        {
+            ApplicationUser user = db.Users.Find(id);
+
+            user.AllRoles = GetAllRoles();
+
+
+            if (ModelState.IsValid)
+            {
+                user.UserName = newData.UserName;
+                user.Email = newData.Email;
+                user.FirstName = newData.FirstName;
+                user.LastName = newData.LastName;
+                user.PhoneNumber = newData.PhoneNumber;
+
+
+                // Cautam toate rolurile din baza de date
+                var roles = db.Roles.ToList();
+
+                foreach (var role in roles)
+                {
+                    // Scoatem userul din rolurile anterioare
+                    await _userManager.RemoveFromRoleAsync(user, role.Name);
+                }
+                // Adaugam noul rol selectat
+                var roleName = await _roleManager.FindByIdAsync(newRole);
+                await _userManager.AddToRoleAsync(user, roleName.ToString());
+
+                db.SaveChanges();
+
+            }
+            return RedirectToAction("Index");
+        }*/
+
+        [HttpPost]
+        [Authorize(Roles = "Admin, User")]
         public async Task<ActionResult> Edit(string id, ApplicationUser newData, [FromForm] string newRole)
         {
             var currentUserId = _userManager.GetUserId(User);
@@ -149,15 +184,13 @@ namespace PinterestApplication.Controllers
                     user.Email = newData.Email;
                     user.FirstName = newData.FirstName;
                     user.LastName = newData.LastName;
-                    //set the user's role to its current role
-                    //not from new data because that is what comes from user input and we dont have that
-                    
-                    //user.PhoneNumber = newData.PhoneNumber;
+                    user.PhoneNumber = newData.PhoneNumber;
 
                     db.Entry(user).State = EntityState.Modified;
                     await db.SaveChangesAsync();
 
-
+                    if (User.IsInRole("Admin"))
+                    {
                         var roles = db.Roles.ToList();
 
                         foreach (var role in roles)
@@ -170,12 +203,11 @@ namespace PinterestApplication.Controllers
                         {
                             await _userManager.AddToRoleAsync(user, roleName.Name);
                         }
-                    
+                    }
 
                     TempData["message"] = "User updated successfully.";
                     TempData["messageType"] = "alert-success";
-                    //return RedirectToAction("Index");
-                    return RedirectToAction("Profile", new { id = user.Id });
+                    return RedirectToAction("Index");
                 }
                 else
                 {
@@ -184,7 +216,6 @@ namespace PinterestApplication.Controllers
                     user.AllRoles = GetAllRoles();
                     ViewBag.UserRole = newRole;
                     return View(user);
-
                 }
             }
 
@@ -195,7 +226,7 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin,User,Editor")]
+        [Authorize(Roles = "Admin, User")]
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))

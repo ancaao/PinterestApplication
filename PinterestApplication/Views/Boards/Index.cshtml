@@ -13,7 +13,7 @@
 </a>
 
 <div class="row">
-    @if (ViewBag.IsAdmin || ViewBag.IsEditor)
+    @if (ViewBag.IsAdmin)
     {
         @foreach (var board in ViewBag.Board)
         {
@@ -22,7 +22,7 @@
                     <div class="card-body">
                         <h5 class="card-title" name="Name">@board.Name</h5>
 
-                        @if ((ViewBag.IsAdmin || ViewBag.IsEditor) && board.User != null )
+                        @if (ViewBag.IsAdmin && board.User != null)
                         {
                             <div><i class="bi bi-person"> Created by: </i> @board.User.UserName</div>
                         }
