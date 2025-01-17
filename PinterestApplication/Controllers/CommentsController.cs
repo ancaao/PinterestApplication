@@ -23,12 +23,12 @@ namespace PinterestApplication.Controllers
 
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "User,Admin,Editor")]
         public IActionResult Delete(int id)
         {
             Comment comm = db.Comment.Find(id);
 
-            if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin") || User.IsInRole("Editor"))
             {
                 db.Comment.Remove(comm);
                 db.SaveChanges();
@@ -42,7 +42,7 @@ namespace PinterestApplication.Controllers
             }
         }
 
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "User,Admin,Editor")]
         public IActionResult Edit(int id)
         {
             Comment comm = db.Comment.Find(id);
@@ -60,12 +60,12 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "User,Admin,Editor")]
         public IActionResult Edit(int id, Comment requestComment)
         {
             Comment comm = db.Comment.Find(id);
 
-            if (comm.UserId == _userManager.GetUserId(User) || User.IsInRole("Admin"))
+            if (comm.UserId == _userManager.GetUserId(User))
             {
                 if (ModelState.IsValid)
                 {

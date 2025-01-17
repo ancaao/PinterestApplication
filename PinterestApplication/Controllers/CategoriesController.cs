@@ -25,7 +25,7 @@ namespace PinterestApplication.Controllers
             _roleManager = roleManager;
         }
 
-        [Authorize(Roles="Admin, User")]
+        [Authorize(Roles="Admin, User, Editor")]
         [AllowAnonymous]
         public ActionResult Index()
         {
@@ -44,7 +44,7 @@ namespace PinterestApplication.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,User")]
+        [Authorize(Roles = "Admin,User,Editor")]
         [AllowAnonymous]
         public IActionResult PostsByCategory(int categoryId)
         {
@@ -63,13 +63,13 @@ namespace PinterestApplication.Controllers
 
 
 
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin,Editor")]
         public ActionResult New()
         {
             return View();
         }
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Editor")]
         [HttpPost]
         public ActionResult New(Category category)
         {
@@ -87,7 +87,7 @@ namespace PinterestApplication.Controllers
            
         }
 
-        [Authorize(Roles = "User,Admin")]
+        [Authorize(Roles = "User,Admin,Editor")]
         [AllowAnonymous]
         public IActionResult Show(int id)
         {
@@ -110,7 +110,7 @@ namespace PinterestApplication.Controllers
         }
 
 
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Editor")]
         public ActionResult Edit(int id)
         {
             Category category = db.Category.Find(id);
@@ -118,7 +118,7 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Editor")]
         public ActionResult Edit(int id, Category requestCategory)
         {
             Category category = db.Category.Find(id);
@@ -138,7 +138,7 @@ namespace PinterestApplication.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,Editor")]
         public ActionResult Delete(int id)
         {
             Category category = db.Category.Find(id);

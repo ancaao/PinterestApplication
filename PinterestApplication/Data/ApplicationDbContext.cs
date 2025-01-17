@@ -17,6 +17,7 @@ namespace PinterestApplication.Data
         public DbSet<Comment> Comment { get; set; }
         public DbSet<Like> Like { get; set; }
         public DbSet<PostBoard> PostBoard { get; set; }
+        public DbSet<Badge> Badge { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

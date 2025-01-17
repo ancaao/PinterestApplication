@@ -28,7 +28,7 @@
                     <i class="bi bi-person"></i> 
                     <a href="/Users/Profile/@Model.UserId" style="font-size:14px; color: #BD0071">@Model.User.UserName</a>
                 </div>
-                <span class="alert-success" style="font-size:12px; background-color: #FFCCE1; color: #BD0071">@Model.Date</span>
+                @* <span class="alert-success" style="font-size:12px; background-color: #FFCCE1; color: #BD0071">@Model.Date</span> *@
             </div>
 
             <h3 class="card-title alert-success py-3 px-3 rounded-2 text-uppercase" style="background-color: #BD0071; color: white">@Model.Title</h3>
@@ -79,6 +79,7 @@
             <div class="d-flex justify-content-between flex-row mt-3">
                 <div><i class="bi-globe"></i> @Model.Category.Name</div>
             </div>
+
             @if (!string.IsNullOrEmpty(Model.Url))
             {
                 <a href="@Model.Url" class="btn btn-primary mt-3" target="_blank">View Original Image Source</a>
@@ -106,7 +107,7 @@
                 </div>
             </div>
         </form>
-        @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin)
+        @if (ViewBag.AfisareButoane == true && Model.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin || ViewBag.IsEditor)
         {
             <div class="d-flex flex-row justify-content-between p-3 border-1 border-top">
                 <a class="btn btn-success" href="/Posts/Edit/@Model.Id">Edit post</a>
@@ -130,11 +131,11 @@
             <div class="col-md-8">
                 <div class="box">
                     <p>@comm.Content</p>
-                    <small>@comm.Date</small>
+@*                     <small>@comm.Date</small> *@
                     <strong><i class="bi bi-person"></i>@comm.User.UserName</strong>
                 </div>
                 <br />
-                @if (comm.UserId == ViewBag.CurrentUser || ViewBag.Isadmin)
+                @if (comm.UserId == ViewBag.CurrentUser || ViewBag.IsAdmin || ViewBag.IsEditor)
                 {
                     <div class="d-flex">
                         @if (comm.UserId == ViewBag.CurrentUser)

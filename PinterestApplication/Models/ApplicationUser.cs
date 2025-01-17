@@ -14,6 +14,8 @@ namespace PinterestApplication.Models
         public virtual ICollection<Post>? Posts { get; set; }
         public virtual ICollection<Board>? Boards { get; set; }
 
+        public virtual ICollection<Badge>? Badges{ get; set; }
+
         // variabila in care vom retine rolurile existente in baza de date
         // pentru popularea unui dropdown list
         [NotMapped]
